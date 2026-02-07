@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Will you be my Valentine?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #0D1A63;
+        font-family: "Fredoka", sans-serif;
+        overflow: hidden;
+        transition: background 0.5s ease;
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .ask-screen h1 {
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        color: #fff;
+        text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        margin-bottom: 2rem;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      .buttons {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+        position: relative;
+      }
+
+      .btn {
+        font-family: "Fredoka", sans-serif;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        border-radius: 999px;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.2s ease;
+        position: relative;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      }
+
+      .btn-yes {
+        background: linear-gradient(180deg, #00d26a, #00a854);
+        color: #fff;
+        padding: 1rem 2.5rem;
+        font-size: 1.5rem;
+        min-width: 140px;
+      }
+
+      .btn-yes:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 28px rgba(0, 163, 84, 0.5);
+      }
+
+      .btn-no {
+        background: linear-gradient(180deg, #ff4757, #c0392b);
+        color: #fff;
+        padding: 1rem 2.5rem;
+        font-size: 1.5rem;
+        min-width: 140px;
+      }
+
+      .btn-no.runaway {
+        position: fixed;
+        transform: translate(-50%, -50%);
+      }
+
+      .btn-no:hover {
+        box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
+      }
+
+      .ask-screen {
+        display: block;
+      }
+
+      .ask-screen.hidden {
+        display: none;
+      }
+
+      .success-screen {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.6s ease;
+      }
+
+      .success-screen.visible {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .success-screen h2 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        color: #fff;
+        text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+        margin-bottom: 1.5rem;
+      }
+
+      .success-gif {
+        max-width: 90vw;
+        width: 400px;
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="ask-screen" id="askScreen">
+        <h1>will you be my valentine?</h1>
+        <div class="buttons" id="buttonsWrap">
+          <button class="btn btn-yes" id="btnYes">yes</button>
+          <button class="btn btn-no" id="btnNo">no</button>
+        </div>
+      </div>
+
+      <div class="success-screen" id="successScreen">
+        <h2>only correct answer</h2>
+        <img
+          class="success-gif"
+          id="successGif"
+          src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2ticzZwbGJudmRuamxxcGQ5MXlpbWJqcnNzbXlqMnhzaXNkd2tzMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0amJzVHIAfl7jMDos/giphy.gif"
+          alt="Celebration"
+        />
+      </div>
+    </div>
+
+    <script>
+      const btnYes = document.getElementById("btnYes");
+      const btnNo = document.getElementById("btnNo");
+      const buttonsWrap = document.getElementById("buttonsWrap");
+      const askScreen = document.getElementById("askScreen");
+      const successScreen = document.getElementById("successScreen");
+      const successGif = document.getElementById("successGif");
+
+      const MIN_SCALE_NO = 0.5;
+      const BASE_SCALE_YES = 1;
+
+      let noScale = 1;
+      let yesScale = BASE_SCALE_YES;
+
+      function randomPosition() {
+        return 10 + Math.random() * 80;
+      }
+
+      btnNo.addEventListener("click", (e) => {
+        e.preventDefault();
+        btnNo.classList.add("runaway");
+        noScale = Math.max(MIN_SCALE_NO, noScale - 0.15);
+        yesScale += 0.15;
+        btnNo.style.left = `${randomPosition()}%`;
+        btnNo.style.top = `${randomPosition()}%`;
+        btnNo.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+        btnYes.style.transform = `scale(${yesScale})`;
+      });
+
+      btnYes.addEventListener("click", () => {
+        askScreen.classList.add("hidden");
+        successScreen.classList.add("visible");
+      });
+    </script>
+  </body>
+</html>
